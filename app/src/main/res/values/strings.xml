@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">Arboretum Spotter</string>
+
+    <!-- Log In and Sign Up page strings-->
+    <string name="text_app_name_title">Arboretum Spotter</string>
+    <string name="text_log_in">Login</string>
+    <string name="text_sign_up">Sign Up</string>
+    <string name="text_go_to_login">Don\'t have an account? Sign up here</string>
+    <string name="text_hint_first_name">First Name</string>
+    <string name="text_hint_last_name">Last Name</string>
+    <string name="text_hint_email">Email Address</string>
+    <string name="text_hint_username">Username</string>
+    <string name="text_hint_password">Password</string>
+    <string name="text_password_requirements_title">Password Requirements</string>
 </resources>

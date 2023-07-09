@@ -2,4 +2,9 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="arb_off_black">#393E46</color>
+    <color name="arb_green">#6D9886</color>
+    <color name="arb_cream">#F2E7D5</color>
+    <color name="arb_white">#F7F7F7</color>
+    <color name="arb_text_box_grey">#9DB2BF</color>
 </resources>
