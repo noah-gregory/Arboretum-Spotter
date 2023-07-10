@@ -4,9 +4,12 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -15,16 +18,15 @@ import android.view.ViewGroup;
  */
 public class LoginFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    // Logging tag for this class
+    private String TAG = LoginFragment.class.toString();
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private EditText usernameEditText;
+    private EditText passwordEditText;
+    private Button loginButton;
 
-    public LoginFragment() {
+    public LoginFragment()
+    {
         // Required empty public constructor
     }
 
@@ -32,33 +34,68 @@ public class LoginFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
      * @return A new instance of fragment LoginFragment.
      */
-    // TODO: Rename and change types and number of parameters
-    public static LoginFragment newInstance(String param1, String param2) {
+    public static LoginFragment newInstance() {
         LoginFragment fragment = new LoginFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+    {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_login, container, false);
+        View view = inflater.inflate(R.layout.fragment_login, container, false);
+
+        // Initialize reference to each editText and button
+        usernameEditText = (EditText) view.findViewById(R.id.edit_text_login_username);
+        passwordEditText = (EditText) view.findViewById(R.id.edit_text_login_password);
+        loginButton = (Button) view.findViewById(R.id.button_login);
+
+        loginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "Login button clicked");
+
+                String username = usernameEditText.getText().toString();
+                String password = passwordEditText.getText().toString();
+
+                Log.d(TAG, "Retrieved username: " +  username + " and password: " + password);
+
+                if(requestLogin(username, password))
+                {
+                    Log.d(TAG, "Login Success");
+
+                    // TODO: Load next activity
+                }
+                else
+                {
+                    Log.d(TAG, "Login Failure");
+
+                    // TODO: Display incorrect login message to user
+                    // Send intent to start next activity with post, search, map, etc
+                }
+            }
+        });
+
+        return view;
+    }
+
+    // TODO: And call to API endpoint
+    private boolean requestLogin(String username, String password)
+    {
+        if(username.equals("JohnSmith") && password.equals("Abc1234!"))
+        {
+            return true;
+        }
+        return false;
     }
 }

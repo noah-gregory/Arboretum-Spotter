@@ -13,22 +13,26 @@ public class LoginSignupPageAdapter extends FragmentStateAdapter
 {
     private ArrayList<Fragment> fragmentList = new ArrayList<>();
 
-    public LoginSignupPageAdapter(FragmentManager fragmentManager, @NonNull Lifecycle lifecycle) {
+    public LoginSignupPageAdapter(FragmentManager fragmentManager, @NonNull Lifecycle lifecycle)
+    {
         super(fragmentManager, lifecycle);
     }
 
     @NonNull
     @Override
-    public Fragment createFragment(int position) {
+    public Fragment createFragment(int position)
+    {
         return fragmentList.get(position);
     }
 
     @Override
-    public int getItemCount() {
+    public int getItemCount()
+    {
         return fragmentList.size();
     }
 
-    public void addFragment(Fragment fragment) {
+    public void addFragment(Fragment fragment)
+    {
         fragmentList.add(fragment);
     }
 }
