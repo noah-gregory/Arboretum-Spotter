@@ -1,5 +1,6 @@
 package com.example.arboretumspotter;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -73,6 +74,8 @@ public class LoginFragment extends Fragment {
                 if(requestLogin(username, password))
                 {
                     Log.d(TAG, "Login Success");
+
+                    // TODO: Save user id to shared preferences
 
                     // TODO: Load next activity
                 }

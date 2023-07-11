@@ -5,7 +5,8 @@
     <string name="text_app_name_title">Arboretum Spotter</string>
     <string name="text_log_in">Login</string>
     <string name="text_sign_up">Sign Up</string>
-    <string name="text_go_to_login">Don\'t have an account? Sign up here</string>
+    <string name="text_go_to_sign_up">Don\'t have an account? Swipe right to sign up</string>
+    <string name="text_go_to_log_in">Already have an account? Swipe left to login</string>
 
     <!-- EditText Hints -->
     <string name="text_hint_first_name">First Name</string>
