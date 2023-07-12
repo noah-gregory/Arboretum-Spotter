@@ -1,3 +1,26 @@
 <resources>
     <string name="app_name">Arboretum Spotter</string>
+
+    <!-- Log In and Sign Up page strings-->
+    <string name="text_app_name_title">Arboretum Spotter</string>
+    <string name="text_log_in">Login</string>
+    <string name="text_sign_up">Sign Up</string>
+    <string name="text_go_to_sign_up">Don\'t have an account? Swipe right to sign up</string>
+    <string name="text_go_to_log_in">Already have an account? Swipe left to login</string>
+
+    <!-- EditText Hints -->
+    <string name="text_hint_first_name">First Name</string>
+    <string name="text_hint_last_name">Last Name</string>
+    <string name="text_hint_email">Email Address</string>
+    <string name="text_hint_username">Username</string>
+    <string name="text_hint_password">Password</string>
+
+    <!-- Password requirements and login and signup error messages -->
+    <string name="text_password_requirements_title">Password Requirements</string>
+    <string name="text_password_requirements_num_chars">At least 8 characters</string>
+    <string name="text_password_requirements_num_up_case">At least 1 uppercase character</string>
+    <string name="text_password_requirements_num_special">At least 1 special character !@#$%^&amp;*</string>
+    <string name="text_password_requirements_num_numbers">At least 1 number</string>
+    <string name="text_invalid_login">Invalid username and password combination</string>
+
 </resources>
