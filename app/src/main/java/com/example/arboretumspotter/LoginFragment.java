@@ -1,5 +1,6 @@
 package com.example.arboretumspotter;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -77,7 +78,9 @@ public class LoginFragment extends Fragment {
 
                     // TODO: Save user id to shared preferences
 
-                    // TODO: Load next activity
+                    // Prepare and send intent to start next activity
+                    Intent spotterActivityIntent = new Intent(getActivity(), SpotterActivity.class);
+                    startActivity(spotterActivityIntent);
                 }
                 else
                 {
