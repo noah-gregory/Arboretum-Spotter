@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".FeedFragment"
-    android:background="@color/arb_cream">
+    android:background="@color/arb_green">
 
     <TextView
         android:layout_width="wrap_content"
