@@ -1,5 +1,6 @@
 package com.example.arboretumspotter;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -71,13 +72,18 @@ public class LoginFragment extends Fragment {
 
                 Log.d(TAG, "Retrieved username: " +  username + " and password: " + password);
 
-                if(requestLogin(username, password))
+                int userId = requestLogin(username, password);
+
+                if(userId != -1)
                 {
                     Log.d(TAG, "Login Success");
 
                     // TODO: Save user id to shared preferences
 
-                    // TODO: Load next activity
+                    // Prepare and send intent to start next activity and pass it userId
+                    Intent spotterActivityIntent = new Intent(getActivity(), SpotterActivity.class);
+                    spotterActivityIntent.putExtra(getString(R.string.intent_key_user_id), userId);
+                    startActivity(spotterActivityIntent);
                 }
                 else
                 {
@@ -93,12 +99,12 @@ public class LoginFragment extends Fragment {
     }
 
     // TODO: And call to API endpoint
-    private boolean requestLogin(String username, String password)
+    private int requestLogin(String username, String password)
     {
         if(username.equals("JohnSmith") && password.equals("Abc1234!"))
         {
-            return true;
+            return 789;
         }
-        return false;
+        return -1;
     }
 }

@@ -3,9 +3,11 @@ package com.example.arboretumspotter;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
-public class MainActivity extends AppCompatActivity
+public class AuthenticationActivity extends AppCompatActivity
 {
     ViewPager2 myViewPager2;
 
@@ -13,7 +15,7 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_authenticate);
 
         // ViewPager2 for swiping between login and signup fragments
         ViewPager2 viewPager2 = findViewById(R.id.viewPager2);

@@ -34,6 +34,7 @@
         android:layout_centerHorizontal="true"
         android:background="@drawable/rounded_edit_text"
         android:hint="@string/text_hint_username"
+        android:textColor="@color/arb_off_black"
         android:paddingLeft="8dp" />
 
     <EditText
@@ -42,9 +43,10 @@
         android:layout_width="220dp"
         android:layout_height="40dp"
         android:layout_centerHorizontal="true"
-        android:paddingLeft="8dp"
         android:background="@drawable/rounded_edit_text"
-        android:hint="@string/text_hint_password"/>
+        android:hint="@string/text_hint_password"
+        android:textColor="@color/arb_off_black"
+        android:paddingLeft="8dp"/>
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/button_login"
