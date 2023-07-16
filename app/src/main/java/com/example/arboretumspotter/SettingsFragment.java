@@ -76,10 +76,11 @@ public class SettingsFragment extends Fragment
 
                 // Remove userId item from sharedPreferences to mark user as logged out
                 SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.remove(getString(R.string.shared_pref_key_user_id));
+                editor.putInt(getString(R.string.shared_pref_key_user_id), -1);
                 editor.apply();
 
-                Log.d(TAG, "UserID " + userId + " removed from sharePreferences");
+                Log.d(TAG, "UserID changed to " + sharedPreferences.getInt(
+                        getString(R.string.shared_pref_key_user_id), -99)+ " in sharePreferences");
 
                 userId = -1;
 
