@@ -1,12 +1,17 @@
 package com.example.arboretumspotter;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -15,6 +20,19 @@ import android.view.ViewGroup;
  */
 public class SettingsFragment extends Fragment
 {
+    private Context context = getActivity();
+
+    /**
+     * Logging tag for this class
+     */
+    private final String TAG = SettingsFragment.class.toString();
+
+    private SharedPreferences sharedPreferences;
+
+    private Button logOutButton;
+
+    private int userId;
+
     public SettingsFragment()
     {
         // Required empty public constructor
@@ -35,16 +53,44 @@ public class SettingsFragment extends Fragment
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null)
-        {
 
-        }
+        // Initialize this fragments reference to the sharedPreferences
+        sharedPreferences = getActivity().getPreferences(Context.MODE_PRIVATE);
+
+        // Get userId saved in sharedPreferences or default value of -1 if userId not found
+        userId = sharedPreferences.getInt(getString(R.string.shared_pref_key_user_id), -1);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_settings, container, false);
+        View view = inflater.inflate(R.layout.fragment_settings, container, false);
+
+        logOutButton = (Button) view.findViewById(R.id.button_logout);
+
+        logOutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "Log Out button clicked");
+
+                // Remove userId item from sharedPreferences to mark user as logged out
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putInt(getString(R.string.shared_pref_key_user_id), -1);
+                editor.apply();
+
+                Log.d(TAG, "UserID changed to " + sharedPreferences.getInt(
+                        getString(R.string.shared_pref_key_user_id), -99)+ " in sharePreferences");
+
+                userId = -1;
+
+                // Send intent to go back to authenticateActivity login screen
+                Intent signOutIntent = new Intent(getActivity(), AuthenticationActivity.class);
+                signOutIntent.setAction("SignOut");
+                startActivity(signOutIntent);
+            }
+        });
+
+        return view;
     }
 }

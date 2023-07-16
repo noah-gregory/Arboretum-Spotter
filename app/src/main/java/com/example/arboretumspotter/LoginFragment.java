@@ -1,5 +1,6 @@
 package com.example.arboretumspotter;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -13,6 +14,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
+import java.util.prefs.Preferences;
+
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link LoginFragment#newInstance} factory method to
@@ -20,7 +23,11 @@ import android.widget.EditText;
  */
 public class LoginFragment extends Fragment {
 
-    // Logging tag for this class
+    private Context context = getActivity();
+
+    /**
+     * Logging tag for this class
+     */
     private String TAG = LoginFragment.class.toString();
 
     private EditText usernameEditText;
@@ -78,7 +85,15 @@ public class LoginFragment extends Fragment {
                 {
                     Log.d(TAG, "Login Success");
 
-                    // TODO: Save user id to shared preferences
+                    // Get instance of shared preferences
+                    SharedPreferences sharedPreferences = getActivity().getPreferences(Context.MODE_PRIVATE);
+
+                    // Write user id to shared preferences
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putInt(getString(R.string.shared_pref_key_user_id), userId);
+                    editor.apply();
+
+                    Log.d(TAG, "UserId: " + userId + " saved to sharedPreferences");
 
                     // Prepare and send intent to start next activity and pass it userId
                     Intent spotterActivityIntent = new Intent(getActivity(), SpotterActivity.class);
@@ -90,7 +105,6 @@ public class LoginFragment extends Fragment {
                     Log.d(TAG, "Login Failure");
 
                     // TODO: Display incorrect login message to user
-                    // Send intent to start next activity with post, search, map, etc
                 }
             }
         });

@@ -40,6 +40,7 @@ public class SpotterActivity extends AppCompatActivity {
 
         // Set home as initial selected fragment
         bottomNavigationView.setSelectedItemId(R.id.home);
+        fragmentManager.beginTransaction().replace(R.id.spotter_layout_container, homeFragment).commit();
 
         // handle navigation selection
         bottomNavigationView.setOnItemSelectedListener(
