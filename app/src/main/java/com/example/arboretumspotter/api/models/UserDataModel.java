@@ -43,6 +43,16 @@ public class UserDataModel
         return firstName;
     }
 
+    public String getLastName()
+    {
+        return lastName;
+    }
+
+    public String getId()
+    {
+        return id;
+    }
+
     public void setName(String firstName)
     {
         this.firstName = firstName;

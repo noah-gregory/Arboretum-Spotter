@@ -42,7 +42,7 @@
     <!-- Keys -->
     <string name="intent_key_user_id">userId</string>
     <string name="shared_pref_key_main">sharedPrefKey</string>
-    <string name="shared_pref_key_user_id">userId</string>
+    <string name="shared_pref_key_user_id">userIdKey</string>
 
     <!-- Strings for calling API -->
     <string name="api_url_login"></string>

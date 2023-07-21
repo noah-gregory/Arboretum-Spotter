@@ -31,7 +31,7 @@ public class SettingsFragment extends Fragment
 
     private Button logOutButton;
 
-    private int userId;
+    private String userId;
 
     public SettingsFragment()
     {
@@ -58,7 +58,7 @@ public class SettingsFragment extends Fragment
         sharedPreferences = getActivity().getPreferences(Context.MODE_PRIVATE);
 
         // Get userId saved in sharedPreferences or default value of -1 if userId not found
-        userId = sharedPreferences.getInt(getString(R.string.shared_pref_key_user_id), -1);
+        userId = sharedPreferences.getString(getString(R.string.shared_pref_key_user_id), "NO_USER_ID");
     }
 
     @Override
@@ -76,13 +76,13 @@ public class SettingsFragment extends Fragment
 
                 // Remove userId item from sharedPreferences to mark user as logged out
                 SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putInt(getString(R.string.shared_pref_key_user_id), -1);
+                editor.putString(getString(R.string.shared_pref_key_user_id), "NO_USER_ID");
                 editor.apply();
 
-                Log.d(TAG, "UserID changed to " + sharedPreferences.getInt(
-                        getString(R.string.shared_pref_key_user_id), -99)+ " in sharePreferences");
+                Log.d(TAG, "UserID changed to " + sharedPreferences.getString(
+                        getString(R.string.shared_pref_key_user_id), "NO_USER_ID")+ " in sharePreferences");
 
-                userId = -1;
+                userId = "NO_USER_ID";
 
                 // Send intent to go back to authenticateActivity login screen
                 Intent signOutIntent = new Intent(getActivity(), AuthenticationActivity.class);

@@ -34,7 +34,7 @@ public class AuthenticationActivity extends AppCompatActivity
             Log.d(TAG, "User successfully logged out");
             sharedPreferences = getPreferences(Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putInt(getString(R.string.shared_pref_key_user_id), -1);
+            editor.putString(getString(R.string.shared_pref_key_user_id), "NO_USER_ID");
             editor.apply();
         }
         else
@@ -60,9 +60,9 @@ public class AuthenticationActivity extends AppCompatActivity
     private void checkLoggedIn()
     {
         sharedPreferences = getPreferences(Context.MODE_PRIVATE);
-        int userId = sharedPreferences.getInt(getString(R.string.shared_pref_key_user_id), -1);
+        String userId = sharedPreferences.getString(getString(R.string.shared_pref_key_user_id), "NO_USER_ID");
 
-        if(userId != -1)
+        if(!userId.equals("NO_USER_ID"))
         {
             Log.d(TAG, "User " + userId + " is already logged in, starting spotter activity");
 

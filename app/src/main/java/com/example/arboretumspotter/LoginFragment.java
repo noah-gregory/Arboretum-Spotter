@@ -20,6 +20,9 @@ import com.example.arboretumspotter.api.models.LoginPayloadDataModel;
 import com.example.arboretumspotter.api.models.LoginResultDataModel;
 import com.example.arboretumspotter.api.models.UserDataModel;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 
@@ -97,33 +100,7 @@ public class LoginFragment extends Fragment {
 
                 Log.d(TAG, "Retrieved username: " +  username + " and password: " + password);
 
-                int userId = requestLogin(username, password);
-
-                if(userId != -1)
-                {
-                    Log.d(TAG, "Login Success");
-
-                    // Get instance of shared preferences
-                    SharedPreferences sharedPreferences = getActivity().getPreferences(Context.MODE_PRIVATE);
-
-                    // Write user id to shared preferences
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putInt(getString(R.string.shared_pref_key_user_id), userId);
-                    editor.apply();
-
-                    Log.d(TAG, "UserId: " + userId + " saved to sharedPreferences");
-
-                    // Prepare and send intent to start next activity and pass it userId
-                    Intent spotterActivityIntent = new Intent(getActivity(), SpotterActivity.class);
-                    spotterActivityIntent.putExtra(getString(R.string.intent_key_user_id), userId);
-                    startActivity(spotterActivityIntent);
-                }
-                else
-                {
-                    Log.d(TAG, "Login Failure");
-
-                    // TODO: Display incorrect login message to user
-                }
+                requestLogin(username, password);
             }
         });
 
@@ -141,17 +118,15 @@ public class LoginFragment extends Fragment {
         return -1;
     }
 
-
     /**
      * Send POST request to remote API for user Login
+     * If login request return valid user id, calls loginSuccess method
      *
-     * @param username
-     * @param password
+     * @param username username input by app user
+     * @param password password input by app user
      */
-    private int requestLogin(String username, String password)
+    private void requestLogin(String username, String password)
     {
-        int[] loginResult = {-1};
-
         // TOD0: change this
         final String baseUrl = "https://arb-navigator-6c93ee5fc546.herokuapp.com/";
 
@@ -192,51 +167,50 @@ public class LoginFragment extends Fragment {
                         Log.d(TAG, "POST response error: " + responseFromAPI.getError());
                     }
 
-                    // TODO: Check if user data model matches what login api expects as input
-
-                    // TODO: decode JWT access toke response
-                    // TODO: make method return user id int for login success
                     if(responseFromAPI.getAccessToken() != null)
                     {
                         Log.d(TAG, "POST response access token: " + responseFromAPI.getAccessToken());
 
-                        String decodedBody = getUserFromToken(responseFromAPI.getAccessToken());
+                        // Attempt to covert token to user object
+                        UserDataModel user = getUserFromToken(responseFromAPI.getAccessToken());
 
-                        if(decodedBody.equals("DECODE_FAIL"))
+                        if(user != null)
                         {
-                            Log.d(TAG, "Token decoding failed");
-                        }
+                            Log.d(TAG, "User logged in: " + user.getFirstName()
+                                    + "\n" + user.getLastName() + "\n" + user.getId());
 
-                        loginResult[0] = 5;
+                            if(user.getId() != null)
+                            {
+                                // Send user id to loginSuccess method to start next activity
+                                loginSuccess(user.getId());
+                            }
+                        }
+                        else
+                        {
+                            Log.d(TAG, "Login Failed, user from token is null");
+                        }
                     }
                 }
                 else {
-                    Log.d(TAG, "Post response was null");
-
-                    // Set loginResult equal to -1 int for login fail
-                    loginResult[0] = -1;
+                    Log.d(TAG, "Login POST response was null");
                 }
             }
 
             @Override
-            public void onFailure(Call<LoginResultDataModel> call, Throwable t) {
-                Log.d(TAG, "Post response failed: " + t.getMessage().toString());
-
-                // Set login result to -1 int to in d login fail
-                loginResult[0] = -1;
+            public void onFailure(Call<LoginResultDataModel> call, Throwable t)
+            {
+                Log.d(TAG, "Login POST response failed: " + t.getMessage().toString());
             }
         });
-
-        return loginResult[0];
     }
 
     /**
-     * Decode JWT access token using HS256 decoding algorithm
+     * Get header and body from JWT access token and call decoding method
      *
      * @param token JWT access token received from Login API
      * @return an user id object with decoded parameters from token
      */
-    private String getUserFromToken(String token)
+    private UserDataModel getUserFromToken(String token)
     {
         try
         {
@@ -244,27 +218,97 @@ public class LoginFragment extends Fragment {
             String[] splitString = token.split("\\.");
 
             // Decode header and body
-            String header = decodeJWT(splitString[0]);
-            String body = decodeJWT(splitString[1]);
+            JSONObject header = decodeJWT(splitString[0]);
+            JSONObject body = decodeJWT(splitString[1]);
 
-            Log.d(TAG, "Decoded header: " + header + "\n Decoded body: " + body);
+            if(header != null && body != null)
+            {
+                Log.d(TAG, "Decoded header: " + header + "\n Decoded body: " + body);
 
-            return body;
+                // Get user first name, last name, and id elements from JSON object body result
+                String firstName = body.getString("firstName");
+                String lastname = body.getString("lastName");
+                String id = body.getString("id");
+
+                Log.d(TAG, "User id from result: " + id);
+
+                // Return new UserDataModel object with parameters from JSON body result
+                return new UserDataModel(firstName, lastname, id);
+            }
+            else
+            {
+                Log.d(TAG, "Header or body JSON object was null");
+            }
         }
         catch (UnsupportedEncodingException e)
         {
             Log.d(TAG, "Decoding token failed: " + e.getMessage());
         }
+        catch (JSONException e)
+        {
+            Log.d(TAG, "A string was not found in JSON object result. " + e.getMessage());
+        }
 
-        // TODO: Create user object with decoded first name, last name, and user id
-        // UserDataModel user = new UserDataModel();
-
-        return "DECODE_FAIL";
+        return null;
     }
 
-    private String decodeJWT(String encodedString) throws UnsupportedEncodingException
+    /**
+     * Decodes JWT token header or body section using base 64 decoding algorithm
+     *
+     * @param encodedString either header or body section from JWT access token
+     * @return decoded json object with contents of given token section
+     * @throws UnsupportedEncodingException exception indicating decoding failed
+     */
+    private JSONObject decodeJWT(String encodedString) throws UnsupportedEncodingException
     {
+        // Decode encoded string into raw bytes array
         byte[] decodedBytes = Base64.decode(encodedString, Base64.URL_SAFE);
-        return new String(decodedBytes, StandardCharsets.UTF_8);
+
+        // Convert raw bytes into string
+        String decodedString = new String(decodedBytes, StandardCharsets.UTF_8);
+
+        try
+        {
+            // Convert decoded string into JSON object
+            JSONObject obj = new JSONObject(decodedString);
+            Log.d(TAG, obj.toString());
+
+            return obj;
+        }
+        catch (Throwable t)
+        {
+            Log.e(TAG, "Could not parse malformed JSON: \"" + decodedString + "\"");
+        }
+
+        // Return null if JSON object creation from string fails
+        return null;
+    }
+
+    /**
+     * Called when a login request successfully returns a valid user id.
+     * Saves user id in shared preferences and starts SpotterActivity.
+     */
+    private void loginSuccess(String userId)
+    {
+        if(userId == null)
+        {
+            Log.d(TAG, "User ID sent to loginSuccess is null");
+            return;
+        }
+
+        // Get instance of shared preferences
+        SharedPreferences sharedPreferences = getActivity().getPreferences(Context.MODE_PRIVATE);
+
+        // Write user id to shared preferences
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(getString(R.string.shared_pref_key_user_id), userId);
+        editor.apply();
+
+        Log.d(TAG, "UserId: " + userId + " saved to sharedPreferences");
+
+        // Prepare and send intent to start next activity and pass it userId
+        Intent spotterActivityIntent = new Intent(getActivity(), SpotterActivity.class);
+        spotterActivityIntent.putExtra(getString(R.string.intent_key_user_id), userId);
+        startActivity(spotterActivityIntent);
     }
 }
