@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +18,10 @@ import com.auth0.android.authentication.storage.SecureCredentialsManager;
 import com.example.arboretumspotter.api.RetrofitAPI;
 import com.example.arboretumspotter.api.models.LoginPayloadDataModel;
 import com.example.arboretumspotter.api.models.LoginResultDataModel;
+import com.example.arboretumspotter.api.models.UserDataModel;
+
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 import retrofit2.Callback;
 import retrofit2.Call;
@@ -194,6 +199,14 @@ public class LoginFragment extends Fragment {
                     if(responseFromAPI.getAccessToken() != null)
                     {
                         Log.d(TAG, "POST response access token: " + responseFromAPI.getAccessToken());
+
+                        String decodedBody = getUserFromToken(responseFromAPI.getAccessToken());
+
+                        if(decodedBody.equals("DECODE_FAIL"))
+                        {
+                            Log.d(TAG, "Token decoding failed");
+                        }
+
                         loginResult[0] = 5;
                     }
                 }
@@ -215,5 +228,43 @@ public class LoginFragment extends Fragment {
         });
 
         return loginResult[0];
+    }
+
+    /**
+     * Decode JWT access token using HS256 decoding algorithm
+     *
+     * @param token JWT access token received from Login API
+     * @return an user id object with decoded parameters from token
+     */
+    private String getUserFromToken(String token)
+    {
+        try
+        {
+            // Split string into header and body
+            String[] splitString = token.split("\\.");
+
+            // Decode header and body
+            String header = decodeJWT(splitString[0]);
+            String body = decodeJWT(splitString[1]);
+
+            Log.d(TAG, "Decoded header: " + header + "\n Decoded body: " + body);
+
+            return body;
+        }
+        catch (UnsupportedEncodingException e)
+        {
+            Log.d(TAG, "Decoding token failed: " + e.getMessage());
+        }
+
+        // TODO: Create user object with decoded first name, last name, and user id
+        // UserDataModel user = new UserDataModel();
+
+        return "DECODE_FAIL";
+    }
+
+    private String decodeJWT(String encodedString) throws UnsupportedEncodingException
+    {
+        byte[] decodedBytes = Base64.decode(encodedString, Base64.URL_SAFE);
+        return new String(decodedBytes, StandardCharsets.UTF_8);
     }
 }

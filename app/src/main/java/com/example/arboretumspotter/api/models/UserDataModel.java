@@ -11,6 +11,8 @@ public class UserDataModel
     private String username;
     private String password;
 
+    private String id;
+
     /**
      * Constructor for Signup POST request
      *
@@ -27,6 +29,13 @@ public class UserDataModel
         this.email = email;
         this.username = username;
         this.password = password;
+    }
+
+    public UserDataModel(String firstName,String lastName, String id)
+    {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.id = id;
     }
 
     public String getFirstName()
