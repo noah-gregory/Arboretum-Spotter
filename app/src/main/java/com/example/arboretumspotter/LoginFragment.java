@@ -4,9 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,7 +11,18 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
-import java.util.prefs.Preferences;
+import androidx.fragment.app.Fragment;
+
+import com.auth0.android.authentication.storage.SecureCredentialsManager;
+import com.example.arboretumspotter.api.RetrofitAPI;
+import com.example.arboretumspotter.api.models.LoginPayloadDataModel;
+import com.example.arboretumspotter.api.models.LoginResultDataModel;
+
+import retrofit2.Callback;
+import retrofit2.Call;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -33,6 +41,11 @@ public class LoginFragment extends Fragment {
     private EditText usernameEditText;
     private EditText passwordEditText;
     private Button loginButton;
+
+    /**
+     * Credentials Manager for Auth0
+     */
+    private SecureCredentialsManager credentialsManager;
 
     public LoginFragment()
     {
@@ -112,13 +125,95 @@ public class LoginFragment extends Fragment {
         return view;
     }
 
-    // TODO: And call to API endpoint
-    private int requestLogin(String username, String password)
+    // For debugging and testing
+    private int debugLogin(String username, String password)
     {
         if(username.equals("JohnSmith") && password.equals("Abc1234!"))
         {
             return 789;
         }
+
         return -1;
+    }
+
+
+    /**
+     * Send POST request to remote API for user Login
+     *
+     * @param username
+     * @param password
+     */
+    private int requestLogin(String username, String password)
+    {
+        int[] loginResult = {-1};
+
+        // TOD0: change this
+        final String baseUrl = "https://arb-navigator-6c93ee5fc546.herokuapp.com/";
+
+        // Creating a retrofit builder and passing our base url
+        // Use Gson converter factory for sending data in json format
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(baseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        // Create an instance for our retrofit api class.
+        RetrofitAPI retrofitAPI = retrofit.create(RetrofitAPI.class);
+
+        // Create user data model instance for login request
+        LoginPayloadDataModel user = new LoginPayloadDataModel(username, password);
+
+        // Call method to create a an API post request
+        // passing our user model class as the payload
+        // and a LoginResultDataModel will be the expected response
+        Call<LoginResultDataModel> call = retrofitAPI.createLogin(user);
+
+        // Asynchronously send request and notify callback of its response
+        // expect a login result data model as response
+        call.enqueue(new Callback<LoginResultDataModel>() {
+            @Override
+            public void onResponse(Call<LoginResultDataModel> call, Response<LoginResultDataModel> response) {
+                LoginResultDataModel responseFromAPI = response.body();
+
+                if (responseFromAPI != null)
+                {
+                    String responseString = "Response Code: " + response.code()
+                            + ", accessToken: " + responseFromAPI.getAccessToken();
+
+                    Log.d(TAG, "POST response: " +  responseString);
+
+                    if(responseFromAPI.getError() != null)
+                    {
+                        Log.d(TAG, "POST response error: " + responseFromAPI.getError());
+                    }
+
+                    // TODO: Check if user data model matches what login api expects as input
+
+                    // TODO: decode JWT access toke response
+                    // TODO: make method return user id int for login success
+                    if(responseFromAPI.getAccessToken() != null)
+                    {
+                        Log.d(TAG, "POST response access token: " + responseFromAPI.getAccessToken());
+                        loginResult[0] = 5;
+                    }
+                }
+                else {
+                    Log.d(TAG, "Post response was null");
+
+                    // Set loginResult equal to -1 int for login fail
+                    loginResult[0] = -1;
+                }
+            }
+
+            @Override
+            public void onFailure(Call<LoginResultDataModel> call, Throwable t) {
+                Log.d(TAG, "Post response failed: " + t.getMessage().toString());
+
+                // Set login result to -1 int to in d login fail
+                loginResult[0] = -1;
+            }
+        });
+
+        return loginResult[0];
     }
 }
