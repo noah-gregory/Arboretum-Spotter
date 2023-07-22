@@ -2,6 +2,7 @@ package com.example.arboretumspotter.api;
 
 import com.example.arboretumspotter.api.models.LoginPayloadDataModel;
 import com.example.arboretumspotter.api.models.LoginResultDataModel;
+import com.example.arboretumspotter.api.models.SignUpResultDataModel;
 import com.example.arboretumspotter.api.models.UserDataModel;
 
 import retrofit2.Call;
@@ -14,6 +15,6 @@ public interface RetrofitAPI
     @POST("/api/login")
     Call<LoginResultDataModel> createLogin(@Body LoginPayloadDataModel dataModel);
 
-    @POST("/api/signup")
-    Call<UserDataModel> createSingUp(@Body UserDataModel dataModel);
+    @POST("/api/signUp")
+    Call<SignUpResultDataModel> createSingUp(@Body UserDataModel dataModel);
 }

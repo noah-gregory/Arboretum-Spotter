@@ -150,7 +150,8 @@ public class LoginFragment extends Fragment {
 
         // Asynchronously send request and notify callback of its response
         // expect a login result data model as response
-        call.enqueue(new Callback<LoginResultDataModel>() {
+        call.enqueue(new Callback<LoginResultDataModel>()
+        {
             @Override
             public void onResponse(Call<LoginResultDataModel> call, Response<LoginResultDataModel> response) {
                 LoginResultDataModel responseFromAPI = response.body();
