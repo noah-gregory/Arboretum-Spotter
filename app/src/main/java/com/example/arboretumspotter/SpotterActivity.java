@@ -31,8 +31,9 @@ public class SpotterActivity extends AppCompatActivity {
         final Fragment feedFragment = new FeedFragment();
         final Fragment settingsFragment = new SettingsFragment();
 
+        // Handle intent and user id from intent extras
         Intent intent = getIntent();
-        int userId = intent.getIntExtra(getString(R.string.intent_key_user_id), -1);
+        String userId = intent.getStringExtra(getString(R.string.intent_key_user_id));
 
         Log.d(TAG, "Started spotter activity with userId: " + userId);
 

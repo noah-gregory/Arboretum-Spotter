@@ -13,6 +13,10 @@ android {
         versionCode 1
         versionName "1.0"
 
+        // TODO: Change this to correct auth0 values
+        manifestPlaceholders.auth0Domain = "123"
+        manifestPlaceholders.auth0Scheme = "456"
+
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -47,4 +51,14 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
     implementation 'androidx.viewpager2:viewpager2:1.0.0'
+
+    implementation 'com.squareup.okhttp:okhttp:2.7.5'
+    implementation 'com.auth0.android:auth0:2.9.3'
+    implementation 'com.auth0.android:jwtdecode:2.0.2'
+
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.5.0'
+
+    implementation 'com.squareup.okhttp3:okhttp:3.0.1'
+    testImplementation 'junit:junit:4.12'
 }
