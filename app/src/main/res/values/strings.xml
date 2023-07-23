@@ -31,6 +31,17 @@
 
     <!-- Upload Post Fragment strings -->
     <string name="text_title_upload_post">Upload Post</string>
+    <string name="text_take_picture">Take Picture with Camera</string>
+    <string name="text_choose_picture">Choose Picture \n from Gallery</string>
+    <string name="text_add_a_picture">Add a Picture</string>
+    <string name="text_select_location">Select Location</string>
+    <string name="text_caption">Caption</string>
+    <string name="text_new_tag">New Tag</string>
+    <string name="text_tags">Tags:</string>
+    <string name="text_add_tag">+ Add Tag</string>
+    <string name="text_clear_tags">Clear Tags</string>
+    <string name="text_upload_post">Upload Post</string>
+    <string name="text_cancel">Cancel</string>
 
     <!-- Feed Fragment strings -->
     <string name="text_title_recent_posts">Recent Posts</string>
@@ -52,5 +63,6 @@
     <string name="auth0_domain">123</string>
     <string name="auth0_scheme">demo</string>
     <string name="api_url_example">http://10.0.2.2:8080/timesheets</string>
+    <string name="text_image_of_new_post">Image of new post</string>
 
 </resources>
