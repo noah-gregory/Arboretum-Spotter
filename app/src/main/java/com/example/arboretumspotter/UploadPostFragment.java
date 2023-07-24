@@ -33,14 +33,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.arboretumspotter.api.RetrofitAPI;
-import com.example.arboretumspotter.api.models.LoginPayloadDataModel;
-import com.example.arboretumspotter.api.models.LoginResultDataModel;
-import com.example.arboretumspotter.api.models.UserDataModel;
+import com.example.arboretumspotter.api.models.PostDataModel;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
 
@@ -74,7 +74,6 @@ public class UploadPostFragment extends Fragment
     private EditText newTagEditText;
 
     private Button addPictureButton;
-    private Button selectLocationButton;
     private Button addTagButton;
     private Button clearTagsButton;
     private Button uploadPostButton;
@@ -83,7 +82,8 @@ public class UploadPostFragment extends Fragment
 
     private String userId;
 
-    private String caption;
+    private Bitmap selectedImage;
+
     private ArrayList<String> tags;
 
     private ActivityResultLauncher<String> requestCameraPermissionLauncher;
@@ -168,7 +168,7 @@ public class UploadPostFragment extends Fragment
 
                         if(data != null)
                         {
-                            Bitmap selectedImage = (Bitmap) data.getExtras().get("data");
+                            selectedImage = (Bitmap) data.getExtras().get("data");
                             imageView.setImageBitmap(selectedImage);
                         }
                     }
@@ -224,7 +224,6 @@ public class UploadPostFragment extends Fragment
 
         // Initialize reference to each button
         addPictureButton = (Button) view.findViewById(R.id.button_add_picture);
-        selectLocationButton = (Button) view.findViewById(R.id.button_select_location);
         addTagButton = (Button) view.findViewById(R.id.button_add_tag);
         clearTagsButton = (Button) view.findViewById(R.id.button_clear_tags);
         uploadPostButton = (Button) view.findViewById(R.id.button_upload_post);
@@ -249,15 +248,6 @@ public class UploadPostFragment extends Fragment
                 {
                     Log.d(TAG, "Permissions for adding an image were denied");
                 }
-            }
-        });
-
-        selectLocationButton.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View view)
-            {
-                Log.d(TAG, "Select Location button clicked");
             }
         });
 
@@ -313,7 +303,23 @@ public class UploadPostFragment extends Fragment
                 Log.d(TAG, "Upload Post button clicked");
 
                 // Get user input caption from editText objects
-                caption = captionEditText.getText().toString();
+                if(selectedImage != null)
+                {
+                    Log.d(TAG, "Calling prepare post for upload");
+
+                    if(tags != null)
+                    {
+                        preparePostForUpload();
+                    }
+                    else
+                    {
+                        Log.d(TAG, "At least one tag required");
+                    }
+                }
+                else
+                {
+                    Log.d(TAG, "Image bitmap was null");
+                }
             }
         });
 
@@ -424,5 +430,91 @@ public class UploadPostFragment extends Fragment
 
         });
         builder.show();
+    }
+
+    /**
+     * Gets all elements required for post
+     */
+    private void preparePostForUpload()
+    {
+        // Get bitmap image as base 64 string representation
+        String imageBase64 = bitmapImageToBase64(selectedImage);
+        String caption = captionEditText.getText().toString();
+        String[] tagsArray = tags.toArray(new String[0]);
+
+        Log.d(TAG, "Got caption: " + caption);
+        Log.d(TAG, "Got tags: " + Arrays.toString(tagsArray));
+
+        // Create post data model with parameters
+        PostDataModel postDataModel = new PostDataModel(imageBase64, caption, tagsArray, userId);
+
+        // Send created post data model to method to send post to upload post api
+        requestUploadPost(postDataModel);
+    }
+
+    /**
+     * Encodes a bitmap image into a Base64 string
+     *
+     * @param image image represented as Bitmap
+     * @return the provided image encoded as a Base64 string
+     */
+    private String bitmapImageToBase64(Bitmap image)
+    {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        image.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
+        byte[] byteArray = byteArrayOutputStream .toByteArray();
+
+        return Base64.getEncoder().encodeToString(byteArray);
+    }
+
+
+    /**
+     * Send POST request to remote API to upload a post
+     * If login request return valid user id, calls loginSuccess method
+     *
+     * @param postDataModel PostDataModel object with all required post parameters
+     */
+    private void requestUploadPost(PostDataModel postDataModel)
+    {
+        final String baseUrl = "https://arb-navigator-6c93ee5fc546.herokuapp.com/";
+
+        // Creating a retrofit builder and passing our base url
+        // Use Gson converter factory for sending data in json format
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(baseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        // Create an instance for our retrofit api class.
+        RetrofitAPI retrofitAPI = retrofit.create(RetrofitAPI.class);
+
+        // Create call to uploadPost API in our retrofit API interface.
+        // Pass it the post data model this method receives
+        Call<PostDataModel> call = retrofitAPI.createUploadPost(postDataModel);
+
+        // Asynchronously send the request and notify callback of its response
+        // expect an upload result data model as response
+        call.enqueue(new Callback<PostDataModel>()
+        {
+            @Override
+            public void onResponse(Call<PostDataModel> call, Response<PostDataModel> response) {
+                PostDataModel responseFromAPI = response.body();
+
+                if (responseFromAPI != null)
+                {
+                    Log.d(TAG, "Got response from uploadPost api");
+                }
+                else
+                {
+                    Log.d(TAG, "UploadPost POST response was null");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<PostDataModel> call, Throwable t)
+            {
+                Log.d(TAG, "UploadPost POST response failed: " + t.getMessage());
+            }
+        });
     }
 }
