@@ -9,11 +9,123 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="140dp"
+        android:layout_marginTop="40dp"
         android:layout_centerHorizontal="true"
         android:textColor="@color/arb_white"
         android:textSize="28sp"
         android:textStyle="bold"
         android:text="@string/text_title_upload_post" />
-    
+
+    <View
+        android:id="@+id/upload_post_box"
+        android:layout_marginTop="90dp"
+        android:layout_width="340dp"
+        android:layout_height="630dp"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/rectangle_background_off_black" />
+
+    <ImageView
+        android:id="@+id/image_view_new_post"
+        android:layout_marginTop="110dp"
+        android:layout_width="280dp"
+        android:layout_height="280dp"
+        android:layout_centerHorizontal="true"
+        android:adjustViewBounds="false"
+        android:scaleType="centerCrop"
+        android:contentDescription="@string/text_image_of_new_post"
+        android:src="@drawable/ic_feed_24"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/button_add_picture"
+        android:layout_marginTop="400dp"
+        android:layout_width="280dp"
+        android:layout_height="40dp"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/rounded_button"
+        android:textColor="@color/arb_off_black"
+        android:textStyle="bold"
+        android:textAllCaps="false"
+        android:text="@string/text_add_a_picture"/>
+
+    <EditText
+        android:id="@+id/edit_text_caption"
+        android:layout_marginTop="460dp"
+        android:layout_width="280dp"
+        android:layout_height="40dp"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/rounded_edit_text"
+        android:textColor="@color/arb_off_black"
+        android:paddingLeft="8dp"
+        android:hint="@string/text_caption" />
+
+    <EditText
+        android:id="@+id/edit_text_new_tag"
+        android:layout_marginTop="520dp"
+        android:layout_width="180dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="66dp"
+        android:background="@drawable/rounded_edit_text"
+        android:hint="@string/text_new_tag"
+        android:paddingLeft="8dp"
+        android:textColor="@color/arb_off_black" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/button_add_tag"
+        android:layout_marginTop="522dp"
+        android:layout_width="90dp"
+        android:layout_height="36dp"
+        android:layout_marginStart="254dp"
+        android:background="@drawable/rounded_button"
+        android:textColor="@color/arb_off_black"
+        android:textStyle="bold"
+        android:textAllCaps="false"
+        android:text="@string/text_add_tag"/>
+
+    <TextView
+        android:id="@+id/text_view_tags"
+        android:layout_marginTop="584dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="68dp"
+        android:textColor="@color/arb_white"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:text="@string/text_tags" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/button_clear_tags"
+        android:layout_marginTop="580dp"
+        android:layout_width="90dp"
+        android:layout_height="36dp"
+        android:layout_marginStart="250dp"
+        android:background="@drawable/rounded_button"
+        android:textColor="@color/arb_off_black"
+        android:textStyle="bold"
+        android:textAllCaps="false"
+        android:text="@string/text_clear_tags"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/button_upload_post"
+        android:layout_marginTop="650dp"
+        android:layout_width="180dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="66dp"
+        android:background="@drawable/beige_button"
+        android:textColor="@color/arb_off_black"
+        android:textStyle="bold"
+        android:textAllCaps="false"
+        android:text="@string/text_upload_post"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/button_cancel_post"
+        android:layout_marginTop="650dp"
+        android:layout_width="84dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="260dp"
+        android:background="@drawable/rounded_button"
+        android:textColor="@color/arb_off_black"
+        android:textStyle="bold"
+        android:textAllCaps="false"
+        android:text="@string/text_cancel"/>
+
 </RelativeLayout>

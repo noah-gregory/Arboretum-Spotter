@@ -7,22 +7,23 @@
     android:background="@color/arb_green">
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_marginTop="300dp"
+        android:layout_width="260dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="100dp"
         android:layout_centerHorizontal="true"
+        android:gravity="center"
         android:textColor="@color/arb_white"
         android:textSize="28sp"
         android:textStyle="bold"
-        android:text="@string/text_title_settings" />
+        android:text="@string/text_log_out_question" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/button_logout"
-        android:layout_marginTop="480dp"
+        android:layout_marginTop="390dp"
         android:layout_width="100dp"
         android:layout_height="40dp"
         android:layout_centerHorizontal="true"
-        android:background="@drawable/rounded_button"
+        android:background="@drawable/beige_button"
         android:textColor="@color/arb_off_black"
         android:textStyle="bold"
         android:textAllCaps="false"

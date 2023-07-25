@@ -8,7 +8,7 @@ public class UserDataModel
     private String firstName;
     private String lastName;
     private String email;
-    private String username;
+    private String login;
     private String password;
 
     private String id;
@@ -19,15 +19,15 @@ public class UserDataModel
      * @param firstName first name of user
      * @param lastName last name of user
      * @param email email of user
-     * @param username username of user
+     * @param login username of user
      * @param password password of user
      */
-    public UserDataModel(String firstName, String lastName, String email, String username, String password)
+    public UserDataModel(String firstName, String lastName, String email, String login, String password)
     {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
-        this.username = username;
+        this.login = login;
         this.password = password;
     }
 
@@ -48,12 +48,17 @@ public class UserDataModel
         return lastName;
     }
 
+    public String getLogin()
+    {
+        return login;
+    }
+
     public String getId()
     {
         return id;
     }
 
-    public void setName(String firstName)
+    public void setFirstName(String firstName)
     {
         this.firstName = firstName;
     }

@@ -1,18 +1,16 @@
 package com.example.arboretumspotter;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.MenuItem;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.navigation.NavigationBarView;
 
 public class SpotterActivity extends AppCompatActivity {
 
@@ -23,19 +21,20 @@ public class SpotterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_spotter);
 
+        // Handle intent and user id from intent extras
+        Intent intent = getIntent();
+        String userId = intent.getStringExtra(getString(R.string.intent_key_user_id));
+        String username = intent.getStringExtra(getString(R.string.intent_key_username));
+
+        Log.d(TAG, "Started spotter activity with user " + userId
+                + " (" + username + ")");
+
         final FragmentManager fragmentManager = getSupportFragmentManager();
 
         // Define fragments
         final Fragment homeFragment = new HomeFragment();
-        final Fragment uploadPostFragment = new UploadPostFragment();
-        final Fragment feedFragment = new FeedFragment();
+        final Fragment uploadPostFragment = new UploadPostFragment(userId, username);
         final Fragment settingsFragment = new SettingsFragment();
-
-        // Handle intent and user id from intent extras
-        Intent intent = getIntent();
-        String userId = intent.getStringExtra(getString(R.string.intent_key_user_id));
-
-        Log.d(TAG, "Started spotter activity with userId: " + userId);
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
 
@@ -58,10 +57,6 @@ public class SpotterActivity extends AppCompatActivity {
                 else if (itemId == R.id.uploadPost)
                 {
                     fragment = uploadPostFragment;
-                }
-                else if (itemId == R.id.feed)
-                {
-                    fragment = feedFragment;
                 }
                 else if (itemId == R.id.settings)
                 {

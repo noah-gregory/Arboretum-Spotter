@@ -100,7 +100,9 @@ public class LoginFragment extends Fragment {
 
                 Log.d(TAG, "Retrieved username: " +  username + " and password: " + password);
 
+                // TODO: switch back to requestLogin once api fix is done
                 requestLogin(username, password);
+                //debugLogin(username, password);
             }
         });
 
@@ -108,14 +110,12 @@ public class LoginFragment extends Fragment {
     }
 
     // For debugging and testing
-    private int debugLogin(String username, String password)
+    private void debugLogin(String username, String password)
     {
         if(username.equals("JohnSmith") && password.equals("Abc1234!"))
         {
-            return 789;
+            loginSuccess("123456789test", "JohnSmith");
         }
-
-        return -1;
     }
 
     /**
@@ -150,7 +150,8 @@ public class LoginFragment extends Fragment {
 
         // Asynchronously send request and notify callback of its response
         // expect a login result data model as response
-        call.enqueue(new Callback<LoginResultDataModel>() {
+        call.enqueue(new Callback<LoginResultDataModel>()
+        {
             @Override
             public void onResponse(Call<LoginResultDataModel> call, Response<LoginResultDataModel> response) {
                 LoginResultDataModel responseFromAPI = response.body();
@@ -182,7 +183,7 @@ public class LoginFragment extends Fragment {
                             if(user.getId() != null)
                             {
                                 // Send user id to loginSuccess method to start next activity
-                                loginSuccess(user.getId());
+                                loginSuccess(user.getId(), username);
                             }
                         }
                         else
@@ -228,7 +229,10 @@ public class LoginFragment extends Fragment {
                 // Get user first name, last name, and id elements from JSON object body result
                 String firstName = body.getString("firstName");
                 String lastname = body.getString("lastName");
-                String id = body.getString("id");
+
+                // TODO: verify the response has field called "id" not "email"
+                //String id = body.getString("id");
+                String id = body.getString("email");
 
                 Log.d(TAG, "User id from result: " + id);
 
@@ -288,11 +292,11 @@ public class LoginFragment extends Fragment {
      * Called when a login request successfully returns a valid user id.
      * Saves user id in shared preferences and starts SpotterActivity.
      */
-    private void loginSuccess(String userId)
+    private void loginSuccess(String userId, String username)
     {
-        if(userId == null)
+        if(userId == null || username == null)
         {
-            Log.d(TAG, "User ID sent to loginSuccess is null");
+            Log.d(TAG, "User ID or username sent to loginSuccess is null");
             return;
         }
 
@@ -302,6 +306,7 @@ public class LoginFragment extends Fragment {
         // Write user id to shared preferences
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(getString(R.string.shared_pref_key_user_id), userId);
+        editor.putString(getString(R.string.shared_pref_key_username), username);
         editor.apply();
 
         Log.d(TAG, "UserId: " + userId + " saved to sharedPreferences");
@@ -309,6 +314,7 @@ public class LoginFragment extends Fragment {
         // Prepare and send intent to start next activity and pass it userId
         Intent spotterActivityIntent = new Intent(getActivity(), SpotterActivity.class);
         spotterActivityIntent.putExtra(getString(R.string.intent_key_user_id), userId);
+        spotterActivityIntent.putExtra(getString(R.string.intent_key_username), username);
         startActivity(spotterActivityIntent);
     }
 }

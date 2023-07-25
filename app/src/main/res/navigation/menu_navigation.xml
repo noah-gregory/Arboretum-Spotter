@@ -9,15 +9,9 @@
         android:id="@+id/uploadPost"
         android:title="Upload"
         android:icon="@drawable/ic_upload_24"/>
-
-    <item
-        android:id="@+id/feed"
-        android:title="Feed"
-        android:icon="@drawable/ic_feed_24"/>
-
     <item
         android:id="@+id/settings"
-        android:title="Settings"
-        android:icon="@drawable/ic_settings_24"/>
+        android:title="Log Out"
+        android:icon="@drawable/ic_logout_24"/>
 
 </menu>
