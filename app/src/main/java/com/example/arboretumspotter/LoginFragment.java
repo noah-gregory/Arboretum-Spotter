@@ -114,7 +114,7 @@ public class LoginFragment extends Fragment {
     {
         if(username.equals("JohnSmith") && password.equals("Abc1234!"))
         {
-            loginSuccess("123456789test");
+            loginSuccess("123456789test", "JohnSmith");
         }
     }
 
@@ -183,7 +183,7 @@ public class LoginFragment extends Fragment {
                             if(user.getId() != null)
                             {
                                 // Send user id to loginSuccess method to start next activity
-                                loginSuccess(user.getId());
+                                loginSuccess(user.getId(), username);
                             }
                         }
                         else
@@ -292,11 +292,11 @@ public class LoginFragment extends Fragment {
      * Called when a login request successfully returns a valid user id.
      * Saves user id in shared preferences and starts SpotterActivity.
      */
-    private void loginSuccess(String userId)
+    private void loginSuccess(String userId, String username)
     {
-        if(userId == null)
+        if(userId == null || username == null)
         {
-            Log.d(TAG, "User ID sent to loginSuccess is null");
+            Log.d(TAG, "User ID or username sent to loginSuccess is null");
             return;
         }
 
@@ -306,6 +306,7 @@ public class LoginFragment extends Fragment {
         // Write user id to shared preferences
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(getString(R.string.shared_pref_key_user_id), userId);
+        editor.putString(getString(R.string.shared_pref_key_username), username);
         editor.apply();
 
         Log.d(TAG, "UserId: " + userId + " saved to sharedPreferences");
@@ -313,6 +314,7 @@ public class LoginFragment extends Fragment {
         // Prepare and send intent to start next activity and pass it userId
         Intent spotterActivityIntent = new Intent(getActivity(), SpotterActivity.class);
         spotterActivityIntent.putExtra(getString(R.string.intent_key_user_id), userId);
+        spotterActivityIntent.putExtra(getString(R.string.intent_key_username), username);
         startActivity(spotterActivityIntent);
     }
 }

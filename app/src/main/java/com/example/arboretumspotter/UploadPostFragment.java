@@ -1,12 +1,9 @@
 package com.example.arboretumspotter;
 
 import static android.Manifest.permission.CAMERA;
-import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -15,13 +12,10 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import android.provider.MediaStore;
@@ -35,22 +29,17 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.arboretumspotter.api.RetrofitAPI;
-import com.example.arboretumspotter.api.models.PostDataModel;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
-import java.util.Objects;
 
-import okhttp3.MediaType;
 import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -71,7 +60,11 @@ public class UploadPostFragment extends Fragment
      */
     private final String TAG = UploadPostFragment.class.toString();
 
-    public static final int REQUEST_ID_MULTIPLE_PERMISSIONS = 101;
+    /**
+     * Member variable of this fragment
+     */
+    private String userId;
+    private String username;
 
     private ImageView imageView;
 
@@ -87,8 +80,6 @@ public class UploadPostFragment extends Fragment
     private Button cancelPostButton;
     private final int MAX_NUM_TAGS = 3;
 
-    private String userId;
-
     private Bitmap selectedImage;
 
     private ArrayList<String> tags;
@@ -99,10 +90,11 @@ public class UploadPostFragment extends Fragment
     private ActivityResultLauncher<Intent> choosePictureActivityResultLauncher;
 
 
-    public UploadPostFragment(String userId)
+    public UploadPostFragment(String userId, String userName)
     {
         // Required empty public constructor
         this.userId = userId;
+        this.username = userName;
     }
 
     /**
@@ -111,9 +103,9 @@ public class UploadPostFragment extends Fragment
      *
      * @return A new instance of fragment UploadPostFragment.
      */
-    public static UploadPostFragment newInstance(String userId)
+    public static UploadPostFragment newInstance(String userId, String userName)
     {
-        return new UploadPostFragment(userId);
+        return new UploadPostFragment(userId, userName);
     }
 
     @Override
@@ -336,6 +328,7 @@ public class UploadPostFragment extends Fragment
             public void onClick(View view)
             {
                 Log.d(TAG, "Cancel Post button clicked");
+                clearPostInputs();
             }
         });
 
@@ -448,7 +441,13 @@ public class UploadPostFragment extends Fragment
         // Get bitmap image as base 64 string representation
         String imageBase64 = bitmapImageToBase64(selectedImage);
         String caption = captionEditText.getText().toString();
-        String[] tagsArray = tags.toArray(new String[0]);
+
+        String[] tagsArray = new String[tags.size()];
+
+        for (int i = 0; i < tags.size(); i++)
+        {
+            tagsArray[i] = tags.get(i);
+        }
 
         Log.d(TAG, "Got caption: " + caption);
         Log.d(TAG, "Got tags: " + Arrays.toString(tagsArray));
@@ -457,10 +456,10 @@ public class UploadPostFragment extends Fragment
 
         try
         {
-            obj.put("poster", userId);
+            obj.put("poster", username);
             obj.put("image", imageBase64);
             obj.put("caption", caption);
-            obj.put("tags", tagsArray);
+            obj.put("tags", tags);
         }
         catch (JSONException e)
         {
@@ -497,12 +496,9 @@ public class UploadPostFragment extends Fragment
      */
     private void requestUploadPost(JSONObject obj)
     {
-        // TODO: look up and add multipart form data for sending image (like multer in js)
-
         final String baseUrl = "https://arb-navigator-6c93ee5fc546.herokuapp.com/";
 
         // Creating a retrofit builder and passing our base url
-        // Use Gson converter factory for sending data in json format
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(baseUrl)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -511,14 +507,13 @@ public class UploadPostFragment extends Fragment
         // Create an instance for our retrofit api class.
         RetrofitAPI retrofitAPI = retrofit.create(RetrofitAPI.class);
 
-        // TODO: update this multipart body
+        // Create multipart body with a JSON object put in formData as string
         MultipartBody.Part multipartBody = MultipartBody.Part
                 .createFormData("json", obj.toString());
 
         Call<Void> call = retrofitAPI.createUploadPost(multipartBody);
 
         // Asynchronously send the request and notify callback of its response
-        // expect an upload result data model as response
         call.enqueue(new Callback<Void>()
         {
             @Override
@@ -526,7 +521,8 @@ public class UploadPostFragment extends Fragment
 
                 if (response.isSuccessful())
                 {
-                    Log.d(TAG, "Got successful response from uploadPost api");
+                    Log.d(TAG, "Got successful response from uploadPost API");
+                    clearPostInputs();
                 }
                 else
                 {
@@ -540,5 +536,16 @@ public class UploadPostFragment extends Fragment
                 Log.d(TAG, "UploadPost POST response failed: " + t.getMessage());
             }
         });
+    }
+
+    private void clearPostInputs()
+    {
+        // Remove image
+        imageView.setImageResource(R.drawable.ic_feed_24);
+        selectedImage = null;
+        captionEditText.setText("");
+        newTagEditText.setText("");
+        tagsTextView.setText(getString(R.string.text_tags));
+        tags = null;
     }
 }

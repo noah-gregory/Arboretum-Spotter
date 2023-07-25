@@ -61,14 +61,17 @@ public class AuthenticationActivity extends AppCompatActivity
     {
         sharedPreferences = getPreferences(Context.MODE_PRIVATE);
         String userId = sharedPreferences.getString(getString(R.string.shared_pref_key_user_id), "NO_USER_ID");
+        String username = sharedPreferences.getString(getString(R.string.shared_pref_key_username), "NO_USERNAME");
 
-        if(!userId.equals("NO_USER_ID"))
+        if(!userId.equals("NO_USER_ID") && !username.equals("NO_USERNAME"))
         {
-            Log.d(TAG, "User " + userId + " is already logged in, starting spotter activity");
+            Log.d(TAG, "User " + userId + " (" + username
+                    + ") is already logged in, starting spotter activity");
 
             // Prepare and send intent to start next activity and pass it userId
             Intent spotterActivityIntent = new Intent(AuthenticationActivity.this, SpotterActivity.class);
             spotterActivityIntent.putExtra(getString(R.string.intent_key_user_id), userId);
+            spotterActivityIntent.putExtra(getString(R.string.intent_key_username), username);
             startActivity(spotterActivityIntent);
         }
         else

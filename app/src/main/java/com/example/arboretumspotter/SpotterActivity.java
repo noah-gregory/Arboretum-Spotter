@@ -24,15 +24,16 @@ public class SpotterActivity extends AppCompatActivity {
         // Handle intent and user id from intent extras
         Intent intent = getIntent();
         String userId = intent.getStringExtra(getString(R.string.intent_key_user_id));
+        String username = intent.getStringExtra(getString(R.string.intent_key_username));
 
-        Log.d(TAG, "Started spotter activity with userId: " + userId);
+        Log.d(TAG, "Started spotter activity with user " + userId
+                + " (" + username + ")");
 
         final FragmentManager fragmentManager = getSupportFragmentManager();
 
         // Define fragments
         final Fragment homeFragment = new HomeFragment();
-        final Fragment uploadPostFragment = new UploadPostFragment(userId);
-        final Fragment feedFragment = new FeedFragment();
+        final Fragment uploadPostFragment = new UploadPostFragment(userId, username);
         final Fragment settingsFragment = new SettingsFragment();
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
@@ -56,10 +57,6 @@ public class SpotterActivity extends AppCompatActivity {
                 else if (itemId == R.id.uploadPost)
                 {
                     fragment = uploadPostFragment;
-                }
-                else if (itemId == R.id.feed)
-                {
-                    fragment = feedFragment;
                 }
                 else if (itemId == R.id.settings)
                 {
