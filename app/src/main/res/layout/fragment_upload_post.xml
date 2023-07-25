@@ -128,4 +128,13 @@
         android:textAllCaps="false"
         android:text="@string/text_cancel"/>
 
+    <TextView
+        android:id="@+id/text_view_upload_page_status"
+        android:layout_marginTop="730dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:textStyle="bold"
+        android:textColor="@color/arb_white"/>
+
 </RelativeLayout>
