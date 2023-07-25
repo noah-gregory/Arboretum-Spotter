@@ -46,18 +46,6 @@
         android:textAllCaps="false"
         android:text="@string/text_add_a_picture"/>
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/button_select_location"
-        android:layout_marginTop="450dp"
-        android:layout_width="280dp"
-        android:layout_height="40dp"
-        android:layout_centerHorizontal="true"
-        android:background="@drawable/rounded_button"
-        android:textColor="@color/arb_off_black"
-        android:textStyle="bold"
-        android:textAllCaps="false"
-        android:text="@string/text_select_location"/>
-
     <EditText
         android:id="@+id/edit_text_caption"
         android:layout_marginTop="500dp"
@@ -74,7 +62,7 @@
         android:layout_marginTop="550dp"
         android:layout_width="180dp"
         android:layout_height="40dp"
-        android:layout_marginStart="56dp"
+        android:layout_marginStart="58dp"
         android:background="@drawable/rounded_edit_text"
         android:hint="@string/text_new_tag"
         android:paddingLeft="8dp"

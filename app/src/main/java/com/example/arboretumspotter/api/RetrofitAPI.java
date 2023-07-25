@@ -7,9 +7,13 @@ import com.example.arboretumspotter.api.models.SignUpResultDataModel;
 import com.example.arboretumspotter.api.models.UploadResponseDataModel;
 import com.example.arboretumspotter.api.models.UserDataModel;
 
+import okhttp3.MultipartBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.Part;
 
 public interface RetrofitAPI
 {
@@ -20,6 +24,7 @@ public interface RetrofitAPI
     @POST("/api/signUp")
     Call<SignUpResultDataModel> createSingUp(@Body UserDataModel dataModel);
 
+    @Multipart
     @POST("/api/uploadPost")
-    Call<PostDataModel> createUploadPost(@Body PostDataModel dataModel);
+    Call<Void> createUploadPost(@Part MultipartBody.Part multipartBody);
 }

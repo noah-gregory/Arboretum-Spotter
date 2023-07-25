@@ -100,7 +100,9 @@ public class LoginFragment extends Fragment {
 
                 Log.d(TAG, "Retrieved username: " +  username + " and password: " + password);
 
+                // TODO: switch back to requestLogin once api fix is done
                 requestLogin(username, password);
+                //debugLogin(username, password);
             }
         });
 
@@ -108,14 +110,12 @@ public class LoginFragment extends Fragment {
     }
 
     // For debugging and testing
-    private int debugLogin(String username, String password)
+    private void debugLogin(String username, String password)
     {
         if(username.equals("JohnSmith") && password.equals("Abc1234!"))
         {
-            return 789;
+            loginSuccess("123456789test");
         }
-
-        return -1;
     }
 
     /**
@@ -229,7 +229,10 @@ public class LoginFragment extends Fragment {
                 // Get user first name, last name, and id elements from JSON object body result
                 String firstName = body.getString("firstName");
                 String lastname = body.getString("lastName");
-                String id = body.getString("id");
+
+                // TODO: verify the response has field called "id" not "email"
+                //String id = body.getString("id");
+                String id = body.getString("email");
 
                 Log.d(TAG, "User id from result: " + id);
 

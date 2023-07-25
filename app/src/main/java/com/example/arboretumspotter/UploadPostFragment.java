@@ -37,13 +37,20 @@ import android.widget.TextView;
 import com.example.arboretumspotter.api.RetrofitAPI;
 import com.example.arboretumspotter.api.models.PostDataModel;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -309,7 +316,7 @@ public class UploadPostFragment extends Fragment
 
                     if(tags != null)
                     {
-                        preparePostForUpload();
+                        prepareForUploadPost();
                     }
                     else
                     {
@@ -433,9 +440,10 @@ public class UploadPostFragment extends Fragment
     }
 
     /**
-     * Gets all elements required for post
+     * Gets all elements required for post.
+     * Creates JSON object with elements and sends it to method to call API.
      */
-    private void preparePostForUpload()
+    private void prepareForUploadPost()
     {
         // Get bitmap image as base 64 string representation
         String imageBase64 = bitmapImageToBase64(selectedImage);
@@ -445,11 +453,23 @@ public class UploadPostFragment extends Fragment
         Log.d(TAG, "Got caption: " + caption);
         Log.d(TAG, "Got tags: " + Arrays.toString(tagsArray));
 
-        // Create post data model with parameters
-        PostDataModel postDataModel = new PostDataModel(imageBase64, caption, tagsArray, userId);
+        JSONObject obj = new JSONObject();
 
-        // Send created post data model to method to send post to upload post api
-        requestUploadPost(postDataModel);
+        try
+        {
+            obj.put("poster", userId);
+            obj.put("image", imageBase64);
+            obj.put("caption", caption);
+            obj.put("tags", tagsArray);
+        }
+        catch (JSONException e)
+        {
+            Log.d(TAG, "Upload post json could not be created");
+        }
+
+        Log.d(TAG, "Post JSON Object: " + obj);
+
+        requestUploadPost(obj);
     }
 
     /**
@@ -463,19 +483,22 @@ public class UploadPostFragment extends Fragment
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         image.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
         byte[] byteArray = byteArrayOutputStream .toByteArray();
+        String encoded = Base64.getEncoder().encodeToString(byteArray);
 
-        return Base64.getEncoder().encodeToString(byteArray);
+        Log.d(TAG, "Image as base 64:\n" + encoded + "\n");
+
+        return encoded;
     }
 
 
     /**
      * Send POST request to remote API to upload a post
      * If login request return valid user id, calls loginSuccess method
-     *
-     * @param postDataModel PostDataModel object with all required post parameters
      */
-    private void requestUploadPost(PostDataModel postDataModel)
+    private void requestUploadPost(JSONObject obj)
     {
+        // TODO: look up and add multipart form data for sending image (like multer in js)
+
         final String baseUrl = "https://arb-navigator-6c93ee5fc546.herokuapp.com/";
 
         // Creating a retrofit builder and passing our base url
@@ -488,30 +511,31 @@ public class UploadPostFragment extends Fragment
         // Create an instance for our retrofit api class.
         RetrofitAPI retrofitAPI = retrofit.create(RetrofitAPI.class);
 
-        // Create call to uploadPost API in our retrofit API interface.
-        // Pass it the post data model this method receives
-        Call<PostDataModel> call = retrofitAPI.createUploadPost(postDataModel);
+        // TODO: update this multipart body
+        MultipartBody.Part multipartBody = MultipartBody.Part
+                .createFormData("json", obj.toString());
+
+        Call<Void> call = retrofitAPI.createUploadPost(multipartBody);
 
         // Asynchronously send the request and notify callback of its response
         // expect an upload result data model as response
-        call.enqueue(new Callback<PostDataModel>()
+        call.enqueue(new Callback<Void>()
         {
             @Override
-            public void onResponse(Call<PostDataModel> call, Response<PostDataModel> response) {
-                PostDataModel responseFromAPI = response.body();
+            public void onResponse(Call<Void> call, Response<Void> response) {
 
-                if (responseFromAPI != null)
+                if (response.isSuccessful())
                 {
-                    Log.d(TAG, "Got response from uploadPost api");
+                    Log.d(TAG, "Got successful response from uploadPost api");
                 }
                 else
                 {
-                    Log.d(TAG, "UploadPost POST response was null");
+                    Log.d(TAG, "UploadPost POST response was not successful");
                 }
             }
 
             @Override
-            public void onFailure(Call<PostDataModel> call, Throwable t)
+            public void onFailure(Call<Void> call, Throwable t)
             {
                 Log.d(TAG, "UploadPost POST response failed: " + t.getMessage());
             }
