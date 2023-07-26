@@ -9,6 +9,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import com.example.arboretumspotter.api.RetrofitAPI;
 import com.example.arboretumspotter.api.models.SignUpResultDataModel;
@@ -19,6 +22,8 @@ import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -37,6 +42,25 @@ public class SignupFragment extends Fragment
      * Logging tag for this class
      */
     private final String TAG = SignupFragment.class.toString();
+
+    private final Pattern VALID_USERNAME_REGEX =
+            Pattern.compile("^[a-zA-Z0-9._-]{2,}", Pattern.CASE_INSENSITIVE);
+
+    private final Pattern VALID_EMAIL_REGEX =
+            Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
+    private final Pattern VALID_PASSWORD_REGEX =
+            Pattern.compile("^(?=.*[0-9])"
+                    + "(?=.*[a-z])(?=.*[A-Z])"
+                    + "(?=.*[@#$%^&+=])"
+                    + "(?=\\S+$).{8,20}$");
+
+    private TextView signupStatusText;
+    private EditText editTextFirstname;
+    private EditText editTextLastname;
+    private EditText editTextUsername;
+    private EditText editTextEmail;
+    private EditText editTextPassword;
+    private Button signupButton;
 
     public SignupFragment()
     {
@@ -58,27 +82,132 @@ public class SignupFragment extends Fragment
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-
-        // TODO: get editTexts and buttons
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_signup, container, false);
+        View view = inflater.inflate(R.layout.fragment_signup, container, false);
+
+        // TODO: get editTexts and buttons
+        signupStatusText = (TextView) view.findViewById(R.id.text_view_signup_status);
+        editTextFirstname = (EditText) view.findViewById(R.id.edit_text_signup_first_name);
+        editTextLastname = (EditText) view.findViewById(R.id.edit_text_signup_last_name);
+        editTextUsername = (EditText) view.findViewById(R.id.edit_text_signup_username);
+        editTextEmail = (EditText) view.findViewById(R.id.edit_text_signup_email);
+        editTextPassword = (EditText) view.findViewById(R.id.edit_text_signup_password);
+        signupButton = (Button) view.findViewById(R.id.button_signup);
+
+        signupButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                Log.d(TAG, "Login button clicked");
+
+                if(signupReqsValid())
+                {
+                    Log.d(TAG, "All signup input requirements met");
+                    prepareForSignup();
+                }
+                else
+                {
+                    Log.d(TAG, "Signup input requirements not met");
+                    signupStatusText.setText(getString(R.string.text_signup_reqs_not_met));
+                }
+            }
+        });
+
+        return view;
+    }
+
+    /**
+     * Checks each sign up input box against set requirements
+     *
+     * @return true if all signup inputs meet requirements
+     */
+    private boolean signupReqsValid()
+    {
+        String firstName = editTextFirstname.getText().toString();
+        String lastName = editTextLastname.getText().toString();
+        String username = editTextUsername.getText().toString();
+        String email = editTextEmail.getText().toString();
+        String password = editTextFirstname.getText().toString();
+
+
+        if(firstName.length() < 1)
+        {
+            return false;
+        }
+        if(lastName.length() < 1)
+        {
+            return false;
+        }
+        if(!checkUsername(username))
+        {
+            Log.d(TAG, "Username does not meet requirements");
+            signupStatusText.setText(getString(R.string.text_signup_insufficient_username));
+            return false;
+        }
+        if(!checkEmail(email))
+        {
+            Log.d(TAG, "Username does not meet requirements");
+            signupStatusText.setText(getString(R.string.text_signup_insufficient_username));
+            return false;
+        }
+        if(!checkPassword(password))
+        {
+            Log.d(TAG, "Password does not meet requirements");
+            signupStatusText.setText(getString(R.string.text_signup_insufficient_username));
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean checkUsername(String username)
+    {
+        Matcher matcher = VALID_USERNAME_REGEX.matcher(username);
+        return matcher.matches();
+    }
+
+    private boolean checkEmail(String email)
+    {
+        Matcher matcher = VALID_EMAIL_REGEX.matcher(email);
+        return matcher.matches();
+    }
+
+    private boolean checkPassword(String password)
+    {
+        Matcher matcher = VALID_PASSWORD_REGEX.matcher(password);
+        return matcher.matches();
+    }
+
+    /**
+     * Get elements for UserDataModel to send to SignUp POST request
+     */
+    private void prepareForSignup()
+    {
+        String firstName = editTextFirstname.getText().toString();
+        String lastName = editTextLastname.getText().toString();
+        String username = editTextUsername.getText().toString();
+        String email = editTextEmail.getText().toString();
+        String password = editTextFirstname.getText().toString();
+
+        // Create user data model
+        UserDataModel user = new UserDataModel(firstName, lastName, email, username, password);
+
+        // Call method to do POST request to remote API for signup
+        requestSignup(user);
     }
 
     /**
      * Send POST request to remote API for user Signup
      *
-     * @param firstName first name of user
-     * @param lastName last name of user
-     * @param email email of user
-     * @param username username of user
-     * @param password password of user
+     * @param user User data model object with sign up parameters
      */
-    private void requestSignup(String firstName, String lastName, String email, String username, String password)
+    private void requestSignup(UserDataModel user)
     {
         String baseUrl = "https://arb-navigator-6c93ee5fc546.herokuapp.com/";
 
@@ -91,9 +220,6 @@ public class SignupFragment extends Fragment
 
         // Create an instance for our retrofit api class.
         RetrofitAPI retrofitAPI = retrofit.create(RetrofitAPI.class);
-
-        // Passing data from our text fields to our user model class.
-        UserDataModel user = new UserDataModel(firstName, lastName, email, username, password);
 
         // Calling a method to create a signup post and passing our modal class.
         Call<SignUpResultDataModel> call = retrofitAPI.createSingUp(user);
@@ -114,17 +240,21 @@ public class SignupFragment extends Fragment
                     Log.d(TAG, "Sign Up POST response: " + responseFromAPI);
 
                     // Get create user object from signUp POST request response
-                    getUserFromToken(responseFromAPI.getAccessToken());
+                    UserDataModel newUser = getUserFromToken(responseFromAPI.getAccessToken());
 
-                    // TODO: display message for signup success
-
-                    // TODO: set text edits to empty
+                    if(newUser != null)
+                    {
+                        // TODO: display message for signup success
+                        // TODO: set text edits to empty
+                        signupSuccess();
+                    }
                 }
                 else
                 {
                     Log.d(TAG, "Sign Up POST response was null");
 
-                    // TODO: display message for signup fail
+                    // Display message for signup fail
+                    signupStatusText.setText(getString(R.string.text_connection_error_signup));
                 }
             }
 
@@ -132,6 +262,7 @@ public class SignupFragment extends Fragment
             public void onFailure(Call<SignUpResultDataModel> call, Throwable t)
             {
                 Log.d(TAG, "Sign Up POST response failed: " + t.getMessage().toString());
+                signupStatusText.setText(getString(R.string.text_connection_error_signup));
             }
         });
     }
@@ -214,5 +345,26 @@ public class SignupFragment extends Fragment
 
         // Return null if JSON object creation from string fails
         return null;
+    }
+
+    /**
+     * Displays success message and clears inputs of sign up screen
+     */
+    private void signupSuccess()
+    {
+        signupStatusText.setText(getText(R.string.text_signup_success));
+        clearInputs();
+    }
+
+    /**
+     * Clears inputs on signup screen
+     */
+    private void clearInputs()
+    {
+        editTextFirstname.setText("");
+        editTextLastname.setText("");
+        editTextUsername.setText("");
+        editTextEmail.setText("");
+        editTextPassword.setText("");
     }
 }

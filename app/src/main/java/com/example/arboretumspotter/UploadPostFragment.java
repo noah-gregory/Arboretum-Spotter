@@ -245,6 +245,7 @@ public class UploadPostFragment extends Fragment
                     // Go to method to select image for post
                     selectImage(getActivity());
                     Log.d(TAG, "Camera and storage permissions granted");
+                    statusTextView.setText("");
                 }
                 else
                 {
@@ -425,6 +426,9 @@ public class UploadPostFragment extends Fragment
      */
     private void prepareForUploadPost()
     {
+        // Disable upload button to avoid user uploading the post multiple times
+        uploadPostButton.setEnabled(false);
+
         // Get bitmap image as base 64 string representation
         String imageBase64 = bitmapImageToBase64(selectedImage);
         String caption = captionEditText.getText().toString();
@@ -444,6 +448,7 @@ public class UploadPostFragment extends Fragment
         catch (JSONException e)
         {
             Log.d(TAG, "Upload post json could not be created");
+            return;
         }
 
         Log.d(TAG, "Post JSON Object: " + obj);
@@ -504,6 +509,7 @@ public class UploadPostFragment extends Fragment
                     Log.d(TAG, "Got successful response from uploadPost API");
                     statusTextView.setText("Post was uploaded successfully");
                     clearPostInputs();
+                    uploadPostButton.setEnabled(true);
                 }
                 else
                 {
@@ -515,6 +521,8 @@ public class UploadPostFragment extends Fragment
             public void onFailure(Call<Void> call, Throwable t)
             {
                 Log.d(TAG, "UploadPost POST response failed: " + t.getMessage());
+                statusTextView.setText("A connection issue occurred, post could not be upload");
+                uploadPostButton.setEnabled(true);
             }
         });
     }

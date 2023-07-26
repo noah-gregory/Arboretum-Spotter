@@ -22,6 +22,13 @@
     <string name="text_password_requirements_num_special">At least 1 special character !@#$%^&amp;*</string>
     <string name="text_password_requirements_num_numbers">At least 1 number</string>
     <string name="text_invalid_login">Invalid username and password combination</string>
+    <string name="text_connection_error_login">A connection error occurred, login was not successful</string>
+    <string name="text_connection_error_signup">A connection error occurred, signup was not successful</string>
+    <string name="text_signup_success">Sign Up was Successful</string>
+    <string name="text_signup_reqs_not_met">Signup input requirements not met</string>
+    <string name="text_signup_insufficient_username">Username does not meet the requirements</string>
+    <string name="text_signup_insufficient_email">Email does not meet the requirements</string>
+    <string name="text_signup_insufficient_password">Password does not meet the requirements</string>
 
     <!-- Spotter Activity strings -->
     <string name="welcome_to_spotter_activity">Welcome to Spotter Activity</string>
