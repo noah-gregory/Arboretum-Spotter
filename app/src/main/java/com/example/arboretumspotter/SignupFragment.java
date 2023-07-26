@@ -48,11 +48,13 @@ public class SignupFragment extends Fragment
 
     private final Pattern VALID_EMAIL_REGEX =
             Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
-    private final Pattern VALID_PASSWORD_REGEX =
-            Pattern.compile("^(?=.*[0-9])"
-                    + "(?=.*[a-z])(?=.*[A-Z])"
-                    + "(?=.*[@#$%^&+=])"
-                    + "(?=\\S+$).{8,20}$");
+
+    String VALID_PASSWORD_REGEX = "^(?=.*[0-9])"
+        + "(?=.*[a-z])(?=.*[A-Z])"
+        + "(?=.*[!@#$%^&+=])"
+        + "(?=\\S+$).{8,20}$";
+
+    private final Pattern passwordPattern = Pattern.compile(VALID_PASSWORD_REGEX);
 
     private TextView signupStatusText;
     private EditText editTextFirstname;
@@ -133,7 +135,7 @@ public class SignupFragment extends Fragment
         String lastName = editTextLastname.getText().toString();
         String username = editTextUsername.getText().toString();
         String email = editTextEmail.getText().toString();
-        String password = editTextFirstname.getText().toString();
+        String password = editTextPassword.getText().toString();
 
 
         if(firstName.length() < 1)
@@ -180,7 +182,7 @@ public class SignupFragment extends Fragment
 
     private boolean checkPassword(String password)
     {
-        Matcher matcher = VALID_PASSWORD_REGEX.matcher(password);
+        Matcher matcher = passwordPattern.matcher(password);
         return matcher.matches();
     }
 
@@ -193,7 +195,7 @@ public class SignupFragment extends Fragment
         String lastName = editTextLastname.getText().toString();
         String username = editTextUsername.getText().toString();
         String email = editTextEmail.getText().toString();
-        String password = editTextFirstname.getText().toString();
+        String password = editTextPassword.getText().toString();
 
         // Create user data model
         UserDataModel user = new UserDataModel(firstName, lastName, email, username, password);

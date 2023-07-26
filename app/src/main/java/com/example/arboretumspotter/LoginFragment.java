@@ -227,18 +227,12 @@ public class LoginFragment extends Fragment {
             {
                 Log.d(TAG, "Decoded header: " + header + "\n Decoded body: " + body);
 
-                // Get user first name, last name, and id elements from JSON object body result
-                String firstName = body.getString("firstName");
-                String lastname = body.getString("lastName");
-
-                // TODO: verify the response has field called "id" not "email"
-                //String id = body.getString("id");
-                String id = body.getString("email");
+                String id = body.getString("id");
 
                 Log.d(TAG, "User id from result: " + id);
 
                 // Return new UserDataModel object with parameters from JSON body result
-                return new UserDataModel(firstName, lastname, id);
+                return new UserDataModel(id);
             }
             else
             {

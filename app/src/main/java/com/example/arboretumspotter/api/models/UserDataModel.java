@@ -22,6 +22,7 @@ public class UserDataModel
      * @param login username of user
      * @param password password of user
      */
+
     public UserDataModel(String firstName, String lastName, String email, String login, String password)
     {
         this.firstName = firstName;
@@ -35,6 +36,11 @@ public class UserDataModel
     {
         this.firstName = firstName;
         this.lastName = lastName;
+        this.id = id;
+    }
+
+    public UserDataModel(String id)
+    {
         this.id = id;
     }
 
