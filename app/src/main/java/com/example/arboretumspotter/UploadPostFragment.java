@@ -338,6 +338,7 @@ public class UploadPostFragment extends Fragment
             public void onClick(View view)
             {
                 Log.d(TAG, "Cancel Post button clicked");
+                statusTextView.setText("");
                 clearPostInputs();
             }
         });
