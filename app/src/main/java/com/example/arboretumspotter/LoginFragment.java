@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
@@ -45,6 +46,8 @@ public class LoginFragment extends Fragment {
      * Logging tag for this class
      */
     private String TAG = LoginFragment.class.toString();
+
+    private TextView loginStatusText;
 
     private EditText usernameEditText;
     private EditText passwordEditText;
@@ -85,14 +88,19 @@ public class LoginFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_login, container, false);
 
+        // Initialize reference to textView
+        loginStatusText = (TextView) view.findViewById(R.id.text_login_status);
+
         // Initialize reference to each editText and button
         usernameEditText = (EditText) view.findViewById(R.id.edit_text_login_username);
         passwordEditText = (EditText) view.findViewById(R.id.edit_text_login_password);
         loginButton = (Button) view.findViewById(R.id.button_login);
 
-        loginButton.setOnClickListener(new View.OnClickListener() {
+        loginButton.setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View view) {
+            public void onClick(View view)
+            {
                 Log.d(TAG, "Login button clicked");
 
                 String username = usernameEditText.getText().toString();
@@ -102,20 +110,10 @@ public class LoginFragment extends Fragment {
 
                 // TODO: switch back to requestLogin once api fix is done
                 requestLogin(username, password);
-                //debugLogin(username, password);
             }
         });
 
         return view;
-    }
-
-    // For debugging and testing
-    private void debugLogin(String username, String password)
-    {
-        if(username.equals("JohnSmith") && password.equals("Abc1234!"))
-        {
-            loginSuccess("123456789test", "JohnSmith");
-        }
     }
 
     /**
@@ -166,6 +164,7 @@ public class LoginFragment extends Fragment {
                     if(responseFromAPI.getError() != null)
                     {
                         Log.d(TAG, "POST response error: " + responseFromAPI.getError());
+                        loginStatusText.setText(getText(R.string.text_invalid_login));
                     }
 
                     if(responseFromAPI.getAccessToken() != null)
@@ -189,11 +188,13 @@ public class LoginFragment extends Fragment {
                         else
                         {
                             Log.d(TAG, "Login Failed, user from token is null");
+                            loginStatusText.setText(getText(R.string.text_connection_error_login));
                         }
                     }
                 }
                 else {
                     Log.d(TAG, "Login POST response was null");
+                    loginStatusText.setText(getText(R.string.text_connection_error_login));
                 }
             }
 
@@ -226,18 +227,12 @@ public class LoginFragment extends Fragment {
             {
                 Log.d(TAG, "Decoded header: " + header + "\n Decoded body: " + body);
 
-                // Get user first name, last name, and id elements from JSON object body result
-                String firstName = body.getString("firstName");
-                String lastname = body.getString("lastName");
-
-                // TODO: verify the response has field called "id" not "email"
-                //String id = body.getString("id");
-                String id = body.getString("email");
+                String id = body.getString("id");
 
                 Log.d(TAG, "User id from result: " + id);
 
                 // Return new UserDataModel object with parameters from JSON body result
-                return new UserDataModel(firstName, lastname, id);
+                return new UserDataModel(id);
             }
             else
             {

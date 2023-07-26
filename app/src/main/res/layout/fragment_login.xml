@@ -73,4 +73,17 @@
         android:textAlignment="center"
         android:text="@string/text_go_to_sign_up"/>
 
+    <TextView
+        android:id="@+id/text_login_status"
+        android:layout_marginTop="550dp"
+        android:layout_width="200dp"
+        android:layout_height="48dp"
+        android:layout_centerHorizontal="true"
+        android:background="@android:color/transparent"
+        android:textColor="@color/arb_white"
+        android:textAllCaps="false"
+        android:textSize="18sp"
+        android:textAlignment="center"
+        android:textStyle="bold"/>
+
 </RelativeLayout>

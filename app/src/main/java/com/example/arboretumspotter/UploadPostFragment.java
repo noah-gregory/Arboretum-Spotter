@@ -30,6 +30,7 @@ import android.widget.TextView;
 
 import com.example.arboretumspotter.api.RetrofitAPI;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -69,6 +70,7 @@ public class UploadPostFragment extends Fragment
     private ImageView imageView;
 
     private TextView tagsTextView;
+    private TextView statusTextView;
 
     private EditText captionEditText;
     private EditText newTagEditText;
@@ -216,6 +218,7 @@ public class UploadPostFragment extends Fragment
 
         // Initialize reference to each textView
         tagsTextView = (TextView) view.findViewById(R.id.text_view_tags);
+        statusTextView = (TextView) view.findViewById(R.id.text_view_upload_page_status);
 
         // Initialize reference to each editText
         captionEditText = (EditText) view.findViewById(R.id.edit_text_caption);
@@ -242,6 +245,7 @@ public class UploadPostFragment extends Fragment
                     // Go to method to select image for post
                     selectImage(getActivity());
                     Log.d(TAG, "Camera and storage permissions granted");
+                    statusTextView.setText("");
                 }
                 else
                 {
@@ -276,6 +280,7 @@ public class UploadPostFragment extends Fragment
                 else
                 {
                     Log.d(TAG, "Max number of post tags reached, cannot add tag");
+                    statusTextView.setText("Max number of post tags reached, cannot add tag");
                 }
             }
         });
@@ -291,6 +296,8 @@ public class UploadPostFragment extends Fragment
 
                 // Set remove tags from textView showing them
                 tagsTextView.setText(getString(R.string.text_tags));
+                newTagEditText.setText("");
+                statusTextView.setText("");
             }
         });
 
@@ -308,16 +315,19 @@ public class UploadPostFragment extends Fragment
 
                     if(tags != null)
                     {
+                        statusTextView.setText("");
                         prepareForUploadPost();
                     }
                     else
                     {
                         Log.d(TAG, "At least one tag required");
+                        statusTextView.setText("At least one tag required");
                     }
                 }
                 else
                 {
                     Log.d(TAG, "Image bitmap was null");
+                    statusTextView.setText("Please choose an image");
                 }
             }
         });
@@ -328,6 +338,7 @@ public class UploadPostFragment extends Fragment
             public void onClick(View view)
             {
                 Log.d(TAG, "Cancel Post button clicked");
+                statusTextView.setText("");
                 clearPostInputs();
             }
         });
@@ -337,9 +348,6 @@ public class UploadPostFragment extends Fragment
 
     private boolean requestPermissions(final Activity context)
     {
-        int writeExternalPermission = ActivityCompat.checkSelfPermission(requireContext(),
-                android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
-
         int cameraPermission = ActivityCompat.checkSelfPermission(requireContext(),
                 android.Manifest.permission.CAMERA);
 
@@ -350,12 +358,6 @@ public class UploadPostFragment extends Fragment
             listPermissionsNeeded.add(android.Manifest.permission.CAMERA);
             requestCameraPermissionLauncher.launch(CAMERA);
         }
-
-//        if (writeExternalPermission != PackageManager.PERMISSION_GRANTED)
-//        {
-//            listPermissionsNeeded.add(android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
-//            requestStoragePermissionLauncher.launch(WRITE_EXTERNAL_STORAGE);
-//        }
         if (!listPermissionsNeeded.isEmpty())
         {
             if(arePermissionsGranted())
@@ -365,6 +367,7 @@ public class UploadPostFragment extends Fragment
             }
 
             Log.d(TAG, "Not all permissions were grant to allow photo selection");
+            statusTextView.setText("Permissions for adding an image were denied");
             return false;
         }
 
@@ -373,9 +376,6 @@ public class UploadPostFragment extends Fragment
 
     private boolean arePermissionsGranted()
     {
-        int writeExternalPermission = ActivityCompat.checkSelfPermission(requireContext(),
-                android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
-
         int cameraPermission = ActivityCompat.checkSelfPermission(requireContext(),
                 android.Manifest.permission.CAMERA);
 
@@ -383,11 +383,6 @@ public class UploadPostFragment extends Fragment
         {
             return false;
         }
-
-//        if (writeExternalPermission != PackageManager.PERMISSION_GRANTED)
-//        {
-//            return false;
-//        }
 
         return true;
     }
@@ -402,7 +397,7 @@ public class UploadPostFragment extends Fragment
 
         Log.d(TAG, "Selecting image method");
 
-        final CharSequence[] optionsMenu = {"Take Photo", "Choose from Gallery", "Exit" }; // create a menuOption Array
+        final CharSequence[] optionsMenu = {"Take Photo", "Exit" }; // create a menuOption Array
 
         // create a dialog for showing the optionsMenu
 
@@ -416,12 +411,6 @@ public class UploadPostFragment extends Fragment
                 // Create and send intent to open the camera to take the picture
                 Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 takePictureActivityResultLauncher.launch(takePictureIntent);
-            }
-            else if(optionsMenu[i].equals("Choose from Gallery"))
-            {
-                // Create and send intent to choose picture from external storage (Photo Gallery)
-                Intent choosePictureIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                choosePictureActivityResultLauncher.launch(choosePictureIntent);
             }
             else if (optionsMenu[i].equals("Exit"))
             {
@@ -438,32 +427,29 @@ public class UploadPostFragment extends Fragment
      */
     private void prepareForUploadPost()
     {
+        // Disable upload button to avoid user uploading the post multiple times
+        uploadPostButton.setEnabled(false);
+
         // Get bitmap image as base 64 string representation
         String imageBase64 = bitmapImageToBase64(selectedImage);
         String caption = captionEditText.getText().toString();
-
-        String[] tagsArray = new String[tags.size()];
-
-        for (int i = 0; i < tags.size(); i++)
-        {
-            tagsArray[i] = tags.get(i);
-        }
-
         Log.d(TAG, "Got caption: " + caption);
-        Log.d(TAG, "Got tags: " + Arrays.toString(tagsArray));
+        Log.d(TAG, "Got tags: " + tags);
 
         JSONObject obj = new JSONObject();
+        JSONArray tagsArray = new JSONArray(tags);
 
         try
         {
             obj.put("poster", username);
             obj.put("image", imageBase64);
             obj.put("caption", caption);
-            obj.put("tags", tags);
+            obj.put("tags", tagsArray);
         }
         catch (JSONException e)
         {
             Log.d(TAG, "Upload post json could not be created");
+            return;
         }
 
         Log.d(TAG, "Post JSON Object: " + obj);
@@ -522,7 +508,9 @@ public class UploadPostFragment extends Fragment
                 if (response.isSuccessful())
                 {
                     Log.d(TAG, "Got successful response from uploadPost API");
+                    statusTextView.setText("Post was uploaded successfully");
                     clearPostInputs();
+                    uploadPostButton.setEnabled(true);
                 }
                 else
                 {
@@ -534,6 +522,8 @@ public class UploadPostFragment extends Fragment
             public void onFailure(Call<Void> call, Throwable t)
             {
                 Log.d(TAG, "UploadPost POST response failed: " + t.getMessage());
+                statusTextView.setText("A connection issue occurred, post could not be upload");
+                uploadPostButton.setEnabled(true);
             }
         });
     }
