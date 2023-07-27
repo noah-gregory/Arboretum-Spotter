@@ -92,7 +92,7 @@ public class SignupFragment extends Fragment
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_signup, container, false);
 
-        // TODO: get editTexts and buttons
+        // Get editTexts and buttons
         signupStatusText = (TextView) view.findViewById(R.id.text_view_signup_status);
         editTextFirstname = (EditText) view.findViewById(R.id.edit_text_signup_first_name);
         editTextLastname = (EditText) view.findViewById(R.id.edit_text_signup_last_name);
@@ -116,7 +116,6 @@ public class SignupFragment extends Fragment
                 else
                 {
                     Log.d(TAG, "Signup input requirements not met");
-                    signupStatusText.setText(getString(R.string.text_signup_reqs_not_met));
                 }
             }
         });
@@ -246,8 +245,6 @@ public class SignupFragment extends Fragment
 
                     if(newUser != null)
                     {
-                        // TODO: display message for signup success
-                        // TODO: set text edits to empty
                         signupSuccess();
                     }
                 }
@@ -342,7 +339,7 @@ public class SignupFragment extends Fragment
         }
         catch (Throwable t)
         {
-            Log.e(TAG, "Could not parse malformed JSON: \"" + decodedString + "\"");
+            Log.e(TAG, "Could not parse JSON from string: \"" + decodedString + "\"");
         }
 
         // Return null if JSON object creation from string fails

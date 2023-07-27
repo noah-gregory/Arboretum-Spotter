@@ -22,6 +22,7 @@
     <string name="text_password_requirements_num_special">At least 1 special character !@#$%^&amp;*</string>
     <string name="text_password_requirements_num_numbers">At least 1 number</string>
     <string name="text_invalid_login">Invalid username and password combination</string>
+    <string name="text_please_verify_your_email">Please verify your email</string>
     <string name="text_connection_error_login">A connection error occurred, login was not successful</string>
     <string name="text_connection_error_signup">A connection error occurred, signup was not successful</string>
     <string name="text_signup_success">Sign Up was Successful</string>
