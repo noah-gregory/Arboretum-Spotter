@@ -35,7 +35,7 @@
     <string name="welcome_to_spotter_activity">Welcome to Spotter Activity</string>
 
     <!-- Home Fragment strings -->
-    <string name="text_title_home">Home</string>
+    <string name="home_image_description">logo</string>
 
     <!-- Upload Post Fragment strings -->
     <string name="text_title_upload_post">Upload Post</string>
