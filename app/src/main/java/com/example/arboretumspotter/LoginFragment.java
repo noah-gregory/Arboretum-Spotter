@@ -164,7 +164,14 @@ public class LoginFragment extends Fragment {
                     if(responseFromAPI.getError() != null)
                     {
                         Log.d(TAG, "POST response error: " + responseFromAPI.getError());
-                        loginStatusText.setText(getText(R.string.text_invalid_login));
+                        if(responseFromAPI.getError().equals("Email is not verified"))
+                        {
+                            loginStatusText.setText(getString(R.string.text_please_verify_your_email));
+                        }
+                        else
+                        {
+                            loginStatusText.setText(getText(R.string.text_invalid_login));
+                        }
                     }
 
                     if(responseFromAPI.getAccessToken() != null)

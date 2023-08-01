@@ -74,6 +74,7 @@
         android:layout_centerHorizontal="true"
         android:paddingLeft="8dp"
         android:background="@drawable/rounded_edit_text"
+        android:inputType="textPassword"
         android:hint="@string/text_hint_password"/>
 
     <androidx.appcompat.widget.AppCompatButton
